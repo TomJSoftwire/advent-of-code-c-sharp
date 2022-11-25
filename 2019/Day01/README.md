@@ -23,3 +23,18 @@ The Fuel Counter-Upper needs to know the total fuel requirement.  To find it, in
 <em>What is the sum of the fuel requirements</em> for all of the modules on your spacecraft?
 
 
+## --- Part Two ---
+During the second Go / No Go poll, the Elf in charge of the Rocket Equation Double-Checker stops the launch sequence.  Apparently, you forgot to include additional fuel for the fuel you just added.
+
+Fuel itself requires fuel just like a module - take its mass, divide by three, round down, and subtract 2.  However, that fuel <em>also</em> requires fuel, and <em>that</em> fuel requires fuel, and so on.  Any mass that would require <em>negative fuel</em> should instead be treated as if it requires <em>zero fuel</em>; the remaining mass, if any, is instead handled by <em>wishing really hard</em>, which has no mass and is outside the scope of this calculation.
+
+So, for each module mass, calculate its fuel and add it to the total.  Then, treat the fuel amount you just calculated as the input mass and repeat the process, continuing until a fuel requirement is zero or negative. For example:
+
+
+ - A module of mass <code>14</code> requires <code>2</code> fuel.  This fuel requires no further fuel (2 divided by 3 and rounded down is <code>0</code>, which would call for a negative fuel), so the total fuel required is still just <code>2</code>.
+ - At first, a module of mass <code>1969</code> requires <code>654</code> fuel.  Then, this fuel requires <code>216</code> more fuel (<code>654 / 3 - 2</code>).  <code>216</code> then requires <code>70</code> more fuel, which requires <code>21</code> fuel, which requires <code>5</code> fuel, which requires no further fuel.  So, the total fuel required for a module of mass <code>1969</code> is <code>654 + 216 + 70 + 21 + 5 = 966</code>.
+ - The fuel required by a module of mass <code>100756</code> and its fuel is: <code>33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2 = 50346</code>.
+
+<em>What is the sum of the fuel requirements</em> for all of the modules on your spacecraft when also taking into account the mass of the added fuel? (Calculate the fuel requirements for each module separately, then add them all up at the end.)
+
+
