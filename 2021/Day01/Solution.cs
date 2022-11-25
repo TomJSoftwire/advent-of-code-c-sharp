@@ -23,5 +23,5 @@ class Solution : Solver
     int DepthIncrease(IEnumerable<int> ns) => (from p in ns.Zip(ns.Skip(1)) where p.First < p.Second select 1).Count();
 
     IEnumerable<int> Get3Window(IEnumerable<int> scans) =>
-        (from s in scans.Zip(scans.Skip(1), scans.Skip(2)) where s.Third != null select s.First + s.Second + s.Third);
+        (from s in scans.Zip(scans.Skip(1), scans.Skip(2)) select s.First + s.Second + s.Third);
 }

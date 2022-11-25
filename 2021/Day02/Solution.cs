@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text.RegularExpressions;
 using System.Text;
 using AngleSharp.Html.Dom.Events;
@@ -15,11 +16,9 @@ enum Direction
     forward
 }
 
-class Position
-{
-    public int forward { get; init; }
-    public int depth { get; init; }
-}
+record Position(int forward, int depth);
+
+record Instruction(Direction direction, int magnitude);
 
 [ProblemName("Dive!")]
 class Solution : Solver
@@ -36,12 +35,12 @@ class Solution : Solver
         return position.depth * position.forward;
     }
 
-    Position GetPositionAim(IEnumerable<(Direction, int)> input)
+    Position GetPositionAim(IEnumerable<Instruction> input)
     {
         var forward = 0;
         var depth = 0;
         var aim = 0;
-        using (IEnumerator<(Direction, int)> dirEnumerator = input.GetEnumerator())
+        using (IEnumerator<Instruction> dirEnumerator = input.GetEnumerator())
         {
             while (dirEnumerator.MoveNext())
             {
@@ -63,47 +62,30 @@ class Solution : Solver
         }
 
         return
-            new Position() { forward = forward, depth = depth };
+            new Position(forward, depth);
     }
 
-    Position GetPositionLinear(IEnumerable<(Direction, int)> input)
+    Position GetPositionLinear(IEnumerable<Instruction> input)
     {
-        var forward = 0;
-        var depth = 0;
-        using (IEnumerator<(Direction, int)> dirEnumerator = input.GetEnumerator())
+        return input.Aggregate(new Position(0, 0), (state, step) => step.direction switch
         {
-            while (dirEnumerator.MoveNext())
-            {
-                var (direction, magnitude) = dirEnumerator.Current;
-                switch (direction)
-                {
-                    case Direction.down:
-                        depth += magnitude;
-                        break;
-                    case Direction.forward:
-                        forward += magnitude;
-                        break;
-                    case Direction.up:
-                        depth -= magnitude;
-                        break;
-                }
-            }
-        }
-
-        return
-            new Position() { forward = forward, depth = depth };
+            Direction.down => state with { depth = state.depth + step.magnitude },
+            Direction.forward => state with { forward = state.forward + step.magnitude },
+            Direction.up => state with { depth = state.depth - step.magnitude },
+            _ => throw new Exception(),
+        });
     }
 
-    IEnumerable<(Direction, int)> Read(string input) =>
+    IEnumerable<Instruction> Read(string input) =>
         from r in input.Split('\n')
         select ParseRow(r);
 
-    (Direction, int) ParseRow(string input)
+    Instruction ParseRow(string input)
     {
         string[] instructions = input.Split(' ');
         Direction direction;
         Direction.TryParse(instructions[0], out direction);
 
-        return (direction, int.Parse(instructions[1]));
+        return new Instruction(direction, int.Parse(instructions[1]));
     }
 }
