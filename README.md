@@ -1,5 +1,5 @@
 
-# Advent of Code (2015-2021)
+# Advent of Code (2021-2021)
 C# solutions to the Advent of Code problems.
 Check out https://adventofcode.com.
 
@@ -30,7 +30,7 @@ start working on your own. The framework part is pretty stable and you get testi
 
 ## Dependencies
 
-- This project is based on `.NET 7`  and `C# 11`. It should work on Windows, Linux and OS-X.
+- This project is based on `.NET 6`  and `C# 10`. It should work on Windows, Linux and OS-X.
 - `AngleSharp` is used for problem download.
 
 ## Running
