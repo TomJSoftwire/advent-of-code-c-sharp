@@ -20,3 +20,16 @@ Other than the range rule, the following are true:
 <em>How many different passwords</em> within the range given in your puzzle input meet these criteria?
 
 
+## --- Part Two ---
+An Elf just remembered one more important detail: the two adjacent matching digits <em>are not part of a larger group of matching digits</em>.
+
+Given this additional criterion, but still ignoring the range rule, the following are now true:
+
+
+ - <code>112233</code> meets these criteria because the digits never decrease and all repeated digits are exactly two digits long.
+ - <code>123<em>444</em></code> no longer meets the criteria (the repeated <code>44</code> is part of a larger group of <code>444</code>).
+ - <code>111122</code> meets the criteria (even though <code>1</code> is repeated more than twice, it still contains a double <code>22</code>).
+
+<em>How many different passwords</em> within the range given in your puzzle input meet all of the criteria?
+
+
