@@ -26,10 +26,6 @@ class Solution : Solver
                 intersections.UnionWith(newIntersections);
                 return occupiedPositions;
             });
-        foreach (var coord in intersections.ToList())
-        {
-            Console.WriteLine($"{coord.x},{coord.y}");
-        }
 
         return intersections.Aggregate(99999999, (min, curr) =>
             min > GetManhattanDistance(curr) ? GetManhattanDistance(curr) : min
@@ -38,6 +34,32 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
+        var instructions = from wire in input.Split('\n') select ParseWire(wire);
+        var lowestDistance = 9999999;
+
+        instructions.Aggregate(new Dictionary<string, int>(), (lookup, wire) =>
+        {
+            var end = new Coord(0, 0);
+            var wireLength = 0;
+            foreach (var instruction in wire)
+            {
+                var distance = instruction.distance;
+                while (distance > 0)
+                {
+                    end = MoveEnd(end, instruction.direction);
+                    wireLength += 1;
+                    var key = $"{end.x},{end.y}";
+                    if (lookup[key] == null || lookup[key] > wireLength)
+                    {
+                        lookup[key] = wireLength;
+                    }
+
+                    distance -= 1;
+                }
+            }
+
+            return lookup;
+        });
         return 0;
     }
 
@@ -61,6 +83,7 @@ class Solution : Solver
         return wire.positions;
     }
 
+
     Coord MoveEnd(Coord end, char dir) => dir switch
     {
         'R' => new Coord(end.x + 1, end.y),
@@ -79,6 +102,26 @@ class Solution : Solver
 
 record Wire(HashSet<Coord> positions, Coord end);
 
-record Coord(int x, int y);
+record Intersection(Coord location, int distance);
+
+record Coord
+{
+    public int x { get; init; }
+    public int y { get; init; }
+    public int? shortestDist { get; init; }
+
+    public Coord(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Coord(int x, int y, int shortestDist)
+    {
+        this.x = x;
+        this.y = y;
+        this.shortestDist = shortestDist;
+    }
+};
 
 record Instruction(char direction, int distance);
