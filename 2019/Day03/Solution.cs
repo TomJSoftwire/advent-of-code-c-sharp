@@ -49,7 +49,7 @@ class Solution : Solver
                     end = MoveEnd(end, instruction.direction);
                     wireLength += 1;
                     var key = $"{end.x},{end.y}";
-                    if (lookup[key] == null || lookup[key] > wireLength)
+                    if (lookup[key] > wireLength)
                     {
                         lookup[key] = wireLength;
                     }
