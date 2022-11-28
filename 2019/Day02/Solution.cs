@@ -21,7 +21,28 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
-        return 0;
+        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        for (int i = 0; i < 100; i++)
+        {
+            for (int j = 0; j < 100; j++)
+            {
+                // Console.WriteLine();
+                var newList = program.ToList();
+                foreach (var VARIABLE in newList)
+                {
+                    // Console.Write(VARIABLE + ",");
+                }
+
+                program[1] = i;
+                program[2] = j;
+                if (RunProgram(newList)[0] == 19690720)
+                {
+                    return i * 100 + j;
+                }
+            }
+        }
+
+        return -1;
     }
 
     List<int> RunProgram(List<int> list, int index = 0)
