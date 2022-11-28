@@ -16,7 +16,7 @@ class Solution : Solver
         var count = 0;
         for (var i = min; i < max; i++)
         {
-            if (ValidateNumber(i))
+            if (ValidateNumber(i, new Regex(@"(\d)\1+")))
             {
                 count++;
             }
@@ -27,21 +27,37 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
-        return 0;
-    }
-
-    bool ValidateNumber(int number)
-    {
-        var stringNum = number.ToString();
-        var repeatedNumRx = new Regex(@"11|22|33|44|55|66|77|88|99|00");
-        var orderedNumRx = new Regex(@"^0*1*2*3*4*5*6*7*8*9*$");
-        if (repeatedNumRx.IsMatch(stringNum) && orderedNumRx.IsMatch(stringNum))
+        var (min, max) = GetRange(input);
+        var count = 0;
+        for (var i = min; i < max; i++)
         {
-            return true;
+            if (ValidateNumber(i, BuildExactlyTwoRx()))
+            {
+                count++;
+            }
         }
 
-        return false;
+        return count;
     }
+
+    Regex BuildExactlyTwoRx()
+    {
+        var rxString = "";
+        for (var i = 0; i < 10; i++)
+        {
+            rxString += $"(?<!{i}){i}{i}(?!{i})|";
+        }
+
+        return new Regex(rxString.Substring(0, rxString.Length - 1));
+    }
+
+    bool ValidateNumber(int number, Regex repeatedNumRx)
+    {
+        var stringNum = number.ToString();
+        var orderedNumRx = new Regex(@"^0*1*2*3*4*5*6*7*8*9*$");
+        return repeatedNumRx.IsMatch(stringNum) && orderedNumRx.IsMatch(stringNum);
+    }
+
     (int, int) GetRange(string input)
     {
         var strs = input.Split('-');
