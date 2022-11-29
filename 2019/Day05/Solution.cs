@@ -12,7 +12,11 @@ class Solution : Solver
 {
     public object PartOne(string input)
     {
-        return 0;
+        var computer = new IntCodePC();
+        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        var outputs = new List<int>();
+        computer.RunProgram(program, 0, outputs);
+        return outputs[outputs.Count - 1];
     }
 
     public object PartTwo(string input)
