@@ -12,10 +12,10 @@ public class IntCodePC
         var (opCode, _) = ParseInstruction(list[0]);
         return (opCode) switch
         {
-            1 => RunProgram(list, 0, 4),
-            2 => RunProgram(list, 0, 4),
-            3 => RunProgram(list, 0, 2),
-            4 => RunProgram(list, 0, 2),
+            1 => RunProgram(list, 0, 3),
+            2 => RunProgram(list, 0, 3),
+            3 => RunProgram(list, 0, 1),
+            4 => RunProgram(list, 0, 1),
             99 => list,
             _ => throw new Exception($"Invalid op-code: {opCode}")
         };
@@ -24,27 +24,28 @@ public class IntCodePC
     public List<int> RunProgram(List<int> list, int instructionIndex, int numParameters)
     {
         var (opCode, parameterModes) = ParseInstruction(list[instructionIndex], numParameters);
-        var nextInstructionIndex = instructionIndex + numParameters;
+        var nextInstructionIndex = instructionIndex + numParameters + 1;
+        var parameters = GetParameterValueLocations(list, instructionIndex, parameterModes);
         return (opCode) switch
         {
-            1 => RunProgram(PerformAdd(list, instructionIndex), nextInstructionIndex, 4),
-            2 => RunProgram(PerformMultiply(list, instructionIndex), nextInstructionIndex, 4),
-            3 => RunProgram(PerformInput(list, instructionIndex), nextInstructionIndex, 2),
-            4 => RunProgram(PerformOutput(list, instructionIndex), nextInstructionIndex, 2),
+            1 => RunProgram(PerformAdd(list, instructionIndex, parameters), nextInstructionIndex, 3),
+            2 => RunProgram(PerformMultiply(list, instructionIndex, parameters), nextInstructionIndex, 3),
+            3 => RunProgram(PerformInput(list, instructionIndex, parameters), nextInstructionIndex, 1),
+            4 => RunProgram(PerformOutput(list, instructionIndex, parameters), nextInstructionIndex, 1),
             99 => list,
             _ => throw new Exception($"Invalid op-code: {opCode}")
         };
     }
 
 
-    public List<int> PerformInput(List<int> list, int index)
+    public List<int> PerformInput(List<int> list, int index, List<int> parameters)
     {
         Console.WriteLine("INPUT REQUIRED");
         int input = int.Parse(Console.ReadLine());
         return list;
     }
 
-    public List<int> PerformOutput(List<int> list, int index)
+    public List<int> PerformOutput(List<int> list, int index, List<int> parameters)
     {
         throw new NotImplementedException();
     }
@@ -67,22 +68,34 @@ public class IntCodePC
         return new ComputerInstruction(opCode, parameterModes);
     }
 
-    List<int> PerformAdd(List<int> list, int startIndex)
+    List<int> PerformAdd(List<int> list, int startIndex, List<int> paramaters)
     {
-        var (a, b, resultIndex) = GetValuesAndTarget(list, startIndex + 1);
-        list[resultIndex] = a + b;
+        var a = paramaters[0];
+        var b = paramaters[1];
+        var resultIndex = paramaters[2];
+        list[resultIndex] = list[a] + list[b];
         return list;
     }
 
-    List<int> PerformMultiply(List<int> list, int startIndex)
+    List<int> PerformMultiply(List<int> list, int startIndex, List<int> paramaters)
     {
-        var (a, b, resultIndex) = GetValuesAndTarget(list, startIndex + 1);
-        list[resultIndex] = a * b;
+        var a = paramaters[0];
+        var b = paramaters[1];
+        var resultIndex = paramaters[2];
+        list[resultIndex] = list[a] * list[b];
         return list;
     }
 
-    ValueIndeces GetValuesAndTarget(List<int> list, int startIndex) =>
-        new ValueIndeces(list[list[startIndex]], list[list[startIndex + 1]], list[startIndex + 2]);
+    List<int> GetParameterValueLocations(List<int> list, int instructionIndex, int[] parameterModes)
+    {
+        var firstParameterIndex = instructionIndex + 1;
+        return parameterModes.Select((mode, index) => mode switch
+        {
+            1 => firstParameterIndex + index,
+            0 => list[firstParameterIndex + index],
+            _ => throw new Exception("Missing parameter mode"),
+        }).ToList();
+    }
 }
 
 record ValueIndeces(int a, int b, int result);
