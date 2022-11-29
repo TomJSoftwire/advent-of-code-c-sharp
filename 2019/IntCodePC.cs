@@ -63,20 +63,22 @@ public class IntCodePC
         return list;
     }
 
+    public virtual int GetInputValue()
+    {
+        return 1;
+    }
+
 
     public virtual List<int> PerformInput(List<int> list, int index, List<int> parameters)
     {
         var newList = list.ToList();
         var writeLocation = parameters[0];
-        // Console.WriteLine("INPUT REQUIRED");
-        // int input = int.Parse(Console.ReadLine());
-        newList[writeLocation] = 1;
+        newList[writeLocation] = GetInputValue();
         return newList;
     }
 
     public virtual List<int> PerformOutput(List<int> list, int index, List<int> parameters, List<int> outputs)
     {
-        Console.WriteLine($"OUTPUT: {list[parameters[0]]}");
         outputs.Add(list[parameters[0]]);
         return list;
     }
