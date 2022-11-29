@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using AdventOfCode.Y2019.Day03;
 
 namespace AdventOfCode.Y2019;
@@ -19,13 +20,51 @@ public class IntCodePC
             2 => RunProgram(PerformMultiply(list, instructionIndex, parameters), nextInstructionIndex, outputs),
             3 => RunProgram(PerformInput(list, instructionIndex, parameters), nextInstructionIndex, outputs),
             4 => RunProgram(PerformOutput(list, instructionIndex, parameters, outputs), nextInstructionIndex, outputs),
+            5 => RunProgram(PerformJumpIfTrue(list, instructionIndex, parameters, out var next), next, outputs),
+            6 => RunProgram(PerformJumpIfFalse(list, instructionIndex, parameters, out var next), next, outputs),
+            7 => RunProgram(PerformLessThan(list, instructionIndex, parameters), nextInstructionIndex, outputs),
+            8 => RunProgram(PerformEqualTo(list, instructionIndex, parameters), nextInstructionIndex, outputs),
             99 => list,
             _ => throw new Exception($"Invalid op-code: {opCode}")
         };
     }
+    List<int> PerformEqualTo(List<int> list, int index, List<int> parameters)
+    {
+        var newList = list.ToList();
+        var a = list[parameters[0]];
+        var b = list[parameters[1]];
+        var writeTo = parameters[2];
+        newList[writeTo] = a == b ? 1 : 0;
+        return newList;
+    }
+    List<int> PerformLessThan(List<int> list, int index, List<int> parameters)
+    {
+        var newList = list.ToList();
+        var a = list[parameters[0]];
+        var b = list[parameters[1]];
+        var writeTo = parameters[2];
+        newList[writeTo] = a < b ? 1 : 0;
+        return newList;
+    }
+
+    public List<int> PerformJumpIfTrue(List<int> list, int index, List<int> parameters, out int nextInstructionIndex)
+    {
+        var conditionValue = list[parameters[0]];
+        var jumpTo = list[parameters[1]];
+        nextInstructionIndex = conditionValue == 0 ? index + parameters.Count + 1 : jumpTo;
+        return list;
+    }
+    
+    public List<int> PerformJumpIfFalse(List<int> list, int index, List<int> parameters, out int nextInstructionIndex)
+    {
+        var conditionValue = list[parameters[0]];
+        var jumpTo = list[parameters[1]];
+        nextInstructionIndex = conditionValue != 0 ? index + parameters.Count + 1 : jumpTo;
+        return list;
+    }
 
 
-    public List<int> PerformInput(List<int> list, int index, List<int> parameters)
+    public virtual List<int> PerformInput(List<int> list, int index, List<int> parameters)
     {
         var newList = list.ToList();
         var writeLocation = parameters[0];
@@ -35,7 +74,7 @@ public class IntCodePC
         return newList;
     }
 
-    public List<int> PerformOutput(List<int> list, int index, List<int> parameters, List<int> outputs)
+    public virtual List<int> PerformOutput(List<int> list, int index, List<int> parameters, List<int> outputs)
     {
         Console.WriteLine($"OUTPUT: {list[parameters[0]]}");
         outputs.Add(list[parameters[0]]);
@@ -52,6 +91,10 @@ public class IntCodePC
             2 => 3,
             3 => 1,
             4 => 1,
+            5 => 2,
+            6 => 2,
+            7 => 3,
+            8 => 3,
             _ => 0,
         };
         var parameterModes = new int[numParameters];

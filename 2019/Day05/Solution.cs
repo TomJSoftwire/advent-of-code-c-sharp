@@ -12,7 +12,7 @@ class Solution : Solver
 {
     public object PartOne(string input)
     {
-        var computer = new IntCodePC();
+        var computer = new Day5PC(1);
         var program = Utility.ParseNumberListInput(input, ",").ToList();
         var outputs = new List<int>();
         computer.RunProgram(program, 0, outputs);
@@ -21,6 +21,26 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
-        return 0;
+        var computer = new Day5PC(5);
+        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        var outputs = new List<int>();
+        computer.RunProgram(program, 0, outputs);
+        return outputs[outputs.Count - 1];
+    }
+}
+
+class Day5PC : IntCodePC
+{
+    private int inputValue;
+    public Day5PC(int inputValue)
+    {
+        this.inputValue = inputValue;
+    }
+    public override List<int> PerformInput(List<int> list, int index, List<int> parameters)
+    {
+        var newList = list.ToList();
+        var writeLocation = parameters[0];
+        newList[writeLocation] = inputValue;
+        return newList;
     }
 }
