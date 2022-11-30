@@ -36,11 +36,9 @@ class Day5PC : IntCodePC
     {
         this.inputValue = inputValue;
     }
-    public override List<int> PerformInput(List<int> list, int index, List<int> parameters)
+
+    public override int GetInputValue()
     {
-        var newList = list.ToList();
-        var writeLocation = parameters[0];
-        newList[writeLocation] = inputValue;
-        return newList;
+        return inputValue;
     }
 }

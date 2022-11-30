@@ -8,6 +8,8 @@ namespace AdventOfCode.Y2019;
 
 public class IntCodePC
 {
+    private int SavedRunIndex = 0;
+    
     public List<int> RunProgram(List<int> list, int instructionIndex, List<int> outputs = null)
     {
         var (opCode, parameterModes) = ParseInstruction(list[instructionIndex]);
@@ -69,7 +71,7 @@ public class IntCodePC
     }
 
 
-    public virtual List<int> PerformInput(List<int> list, int index, List<int> parameters)
+    public List<int> PerformInput(List<int> list, int index, List<int> parameters)
     {
         var newList = list.ToList();
         var writeLocation = parameters[0];
@@ -77,9 +79,15 @@ public class IntCodePC
         return newList;
     }
 
-    public virtual List<int> PerformOutput(List<int> list, int index, List<int> parameters, List<int> outputs)
+    
+    public virtual void WriteToOutput(int value, List<int> outputs)
     {
-        outputs.Add(list[parameters[0]]);
+        outputs.Add(value);
+    }
+
+    public List<int> PerformOutput(List<int> list, int index, List<int> parameters, List<int> outputs)
+    {
+        WriteToOutput(list[parameters[0]], outputs);
         return list;
     }
 

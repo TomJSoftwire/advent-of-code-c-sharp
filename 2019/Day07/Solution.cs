@@ -23,7 +23,16 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
+        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        // var permutations = GetPermutations(new int[] { 4, 3, 2, 1, 0 }, 5);
+        var permutations = new int[] { 9, 8, 7, 6, 5 };
+        var pc1 = new Day7PC(0, 0);
         return 0;
+        // return permutations.Aggregate(0, (max, curr) =>
+        // {
+        //     var result = RunPhaseSequence(curr, program);
+        //     return result > max ? result : max;
+        // });
     }
 
     static IEnumerable<IEnumerable<T>>
@@ -50,14 +59,26 @@ class Day7PC : IntCodePC
 {
     private Queue<int> inputs = new Queue<int>();
 
-    public Day7PC(int phase, int input)
+    public Day7PC outputPc
+    {
+        set { }
+    }
+
+    public Day7PC(int phase, int input, Day7PC outputPc = null)
     {
         this.inputs.Enqueue(phase);
         this.inputs.Enqueue(input);
+        this.outputPc = outputPc;
     }
 
     public override int GetInputValue()
     {
         return this.inputs.Dequeue();
+    }
+
+    public override void WriteToOutput(int value, List<int> outputs)
+    {
+        outputs.Add(value);
+        this.inputs.Enqueue(value);
     }
 }
