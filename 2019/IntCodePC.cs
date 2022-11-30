@@ -9,7 +9,25 @@ namespace AdventOfCode.Y2019;
 public class IntCodePC
 {
     private int SavedRunIndex = 0;
-    
+    private List<int> program;
+    public List<int> outputs = new List<int>();
+
+    public IntCodePC(string input)
+    {
+        this.program = Utility.ParseNumberListInput(input, ",").ToList();
+    }
+
+    public IntCodePC()
+    {
+    }
+
+    public List<int> ResumeProgram() => RunProgram(this.program, this.SavedRunIndex, this.outputs);
+
+
+    public List<int> StartProgram() =>
+        RunProgram(this.program, 0, this.outputs);
+
+
     public List<int> RunProgram(List<int> list, int instructionIndex, List<int> outputs = null)
     {
         var (opCode, parameterModes) = ParseInstruction(list[instructionIndex]);
@@ -30,6 +48,7 @@ public class IntCodePC
             _ => throw new Exception($"Invalid op-code: {opCode}")
         };
     }
+
     List<int> PerformEqualTo(List<int> list, int index, List<int> parameters)
     {
         var newList = list.ToList();
@@ -39,6 +58,7 @@ public class IntCodePC
         newList[writeTo] = a == b ? 1 : 0;
         return newList;
     }
+
     List<int> PerformLessThan(List<int> list, int index, List<int> parameters)
     {
         var newList = list.ToList();
@@ -56,7 +76,7 @@ public class IntCodePC
         nextInstructionIndex = conditionValue == 0 ? index + parameters.Count + 1 : jumpTo;
         return list;
     }
-    
+
     public List<int> PerformJumpIfFalse(List<int> list, int index, List<int> parameters, out int nextInstructionIndex)
     {
         var conditionValue = list[parameters[0]];
@@ -79,8 +99,13 @@ public class IntCodePC
         return newList;
     }
 
-    
+
     public virtual void WriteToOutput(int value, List<int> outputs)
+    {
+        outputs.Add(value);
+    }
+    
+    public virtual void WriteToOutput(int value)
     {
         outputs.Add(value);
     }

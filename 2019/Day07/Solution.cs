@@ -12,21 +12,19 @@ class Solution : Solver
 {
     public object PartOne(string input)
     {
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
         var permutations = GetPermutations(new int[] { 4, 3, 2, 1, 0 }, 5);
         return permutations.Aggregate(0, (max, curr) =>
         {
-            var result = RunPhaseSequence(curr, program);
+            var result = RunPhaseSequence(curr, input);
             return result > max ? result : max;
         });
     }
 
     public object PartTwo(string input)
     {
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
         // var permutations = GetPermutations(new int[] { 4, 3, 2, 1, 0 }, 5);
         var permutations = new int[] { 9, 8, 7, 6, 5 };
-        var pc1 = new Day7PC(0, 0);
+        var pc1 = new Day7PC(input, 0, 0);
         return 0;
         // return permutations.Aggregate(0, (max, curr) =>
         // {
@@ -45,12 +43,12 @@ class Solution : Solver
                 (t1, t2) => t1.Concat(new T[] { t2 }));
     }
 
-    int RunPhaseSequence(IEnumerable<int> phaseSequence, List<int> program)
+    int RunPhaseSequence(IEnumerable<int> phaseSequence, string program)
         => phaseSequence.Aggregate(0, (thrust, phase) =>
         {
-            var pc = new Day7PC(phase, thrust);
-            var outputs = new List<int>();
-            pc.RunProgram(program, 0, outputs);
+            var pc = new Day7PC(program, phase, thrust);
+            pc.StartProgram();
+            var outputs = pc.outputs;
             return outputs[outputs.Count - 1];
         });
 }
@@ -59,16 +57,15 @@ class Day7PC : IntCodePC
 {
     private Queue<int> inputs = new Queue<int>();
 
-    public Day7PC outputPc
+    private Day7PC outputPc
     {
         set { }
     }
 
-    public Day7PC(int phase, int input, Day7PC outputPc = null)
+    public Day7PC(string program, int phase, int input) : base(program)
     {
         this.inputs.Enqueue(phase);
         this.inputs.Enqueue(input);
-        this.outputPc = outputPc;
     }
 
     public override int GetInputValue()
@@ -76,7 +73,7 @@ class Day7PC : IntCodePC
         return this.inputs.Dequeue();
     }
 
-    public override void WriteToOutput(int value, List<int> outputs)
+    public override void WriteToOutput(int value)
     {
         outputs.Add(value);
         this.inputs.Enqueue(value);
