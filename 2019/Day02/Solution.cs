@@ -13,7 +13,7 @@ class Solution : Solver
     public object PartOne(string input)
     {
         var computer = new IntCodePC();
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        var program = Utility.ParseDoubleListInput(input, ",").ToList();
         program[1] = 12;
         program[2] = 2;
         var result = computer.RunProgram(program, 0);
@@ -23,7 +23,7 @@ class Solution : Solver
     public object PartTwo(string input)
     {
         var computer = new IntCodePC();
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
+        var program = Utility.ParseDoubleListInput(input, ",").ToList();
         for (int i = 0; i < 100; i++)
         {
             for (int j = 0; j < 100; j++)

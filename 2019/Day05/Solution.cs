@@ -12,19 +12,17 @@ class Solution : Solver
 {
     public object PartOne(string input)
     {
-        var computer = new Day5PC(1);
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
-        var outputs = new List<int>();
-        computer.RunProgram(program, 0, outputs);
+        var computer = new Day5PC(1, input);
+        var outputs = computer.outputs;
+        computer.StartProgram();
         return outputs[outputs.Count - 1];
     }
 
     public object PartTwo(string input)
     {
-        var computer = new Day5PC(5);
-        var program = Utility.ParseNumberListInput(input, ",").ToList();
-        var outputs = new List<int>();
-        computer.RunProgram(program, 0, outputs);
+        var computer = new Day5PC(5, input);
+        var outputs = computer.outputs;
+        computer.StartProgram();
         return outputs[outputs.Count - 1];
     }
 }
@@ -32,12 +30,13 @@ class Solution : Solver
 class Day5PC : IntCodePC
 {
     private int inputValue;
-    public Day5PC(int inputValue)
+
+    public Day5PC(int inputValue, string input) : base(input)
     {
         this.inputValue = inputValue;
     }
 
-    public override int GetInputValue()
+    public override double GetInputValue()
     {
         return inputValue;
     }
