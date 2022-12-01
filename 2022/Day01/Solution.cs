@@ -14,23 +14,16 @@ class Solution : Solver
     {
         var foodPerElf = ParseInput(input);
         var calPerElf = foodPerElf.Select(elf => elf.Aggregate(0, (total, item) => total + item));
-        var max = calPerElf.Aggregate(0, (max, curr) => curr < max ? max : curr);
-        return max;
+        return calPerElf.OrderDescending().Take(1).Sum();
     }
 
     public object PartTwo(string input)
     {
         var foodPerElf = ParseInput(input);
         var calPerElf = foodPerElf.Select(elf => elf.Aggregate(0, (total, item) => total + item));
-        var max = calPerElf.Aggregate(0, (max, curr) => curr < max ? max : curr);
-        var second = calPerElf.Where(cal => cal != max).Aggregate(0, (max, curr) => curr < max ? max : curr);
-        var third = calPerElf.Where(cal => cal != second && cal != max).Aggregate(0, (max, curr) => curr < max ? max : curr);
-        return max + second + third;
+        return calPerElf.OrderDescending().Take(3).Sum();
     }
 
-    IEnumerable<IEnumerable<int>> ParseInput(string input)
-    {
-        var r = input.Split("\n\n").Select((elf) => elf.Split('\n').Select(food => int.Parse(food)));
-        return r;
-    }
+    IEnumerable<IEnumerable<int>> ParseInput(string input) =>
+        input.Split("\n\n").Select((elf) => elf.Split('\n').Select(food => int.Parse(food)));
 }
