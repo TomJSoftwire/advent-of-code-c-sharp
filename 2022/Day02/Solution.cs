@@ -13,16 +13,18 @@ class Solution : Solver
     public object PartOne(string input)
     {
         var games = Read(input);
-        var total = games.Aggregate(0, (total, game) => total + ScoreGame(game));
+        var total = games.Aggregate(0, (total, game) => total + ScoreGameUsingInput(game));
         return total;
     }
 
     public object PartTwo(string input)
     {
-        return 0;
+        var games = Read(input);
+        var total = games.Aggregate(0, (total, game) => total + ScoreGameToAchieveResult(game));
+        return total;
     }
 
-    int ScoreGame((char, char) game)
+    int ScoreGameUsingInput((char, char) game)
     {
         var (them, me) = game;
         return me switch
@@ -44,6 +46,32 @@ class Solution : Solver
                 'A' => 0,
                 'B' => 6,
                 'C' => 3,
+            },
+        };
+    }
+    
+    int ScoreGameToAchieveResult((char, char) game)
+    {
+        var (them, me) = game;
+        return me switch
+        {
+            'X' => 0 + them switch
+            {
+                'A' => 3,
+                'B' => 1,
+                'C' => 2,
+            },
+            'Y' => 3 + them switch
+            {
+                'A' => 1,
+                'B' => 2,
+                'C' => 3,
+            },
+            'Z' => 6 + them switch
+            {
+                'A' => 2,
+                'B' => 3,
+                'C' => 1,
             },
         };
     }
