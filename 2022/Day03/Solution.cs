@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
@@ -18,19 +19,10 @@ class Solution : Solver
         return priorities.Sum();
     }
 
-    public object PartTwo(string input)
-    {
-        var bags = input.Split('\n').ToList();
-        var total = 0;
-        for (var i = 0; i < bags.Count; i += 3)
-        {
-            var group = bags.GetRange(i, 3);
-            total += GetPriority(GroupMatches(group));
-        }
-
-        return total;
-        
-    }
+    public object PartTwo(string input) => (
+        from g in input.Split('\n').Chunk(3)
+        select GetPriority(FindMatch(g))
+    ).Sum();
 
     int GetPriority(char letter)
     {
@@ -38,20 +30,13 @@ class Solution : Solver
         return adjustedCode > 0 ? adjustedCode : (adjustedCode + 31 + 27);
     }
 
-    char GroupMatches(IEnumerable<IEnumerable<char>> group)
+    char FindMatch(IEnumerable<IEnumerable<char>> group)
         => group.Aggregate(group.First(), (matches, bag) => matches.Intersect(bag)).ToList()[0];
 
 
-    char FindMatch((string, string) backpack)
-    {
-        var (a, b) = backpack;
-        var intersection = a.Intersect(b).ToList();
-        return intersection[0];
-    }
-
-    IEnumerable<(string, string)> Read1(string input)
+    IEnumerable<List<string>> Read1(string input)
         =>
             from backback in input.Split('\n')
             let size = backback.Length
-            select (backback.Substring(0, size / 2), backback.Substring(size / 2));
+            select new List<string>() { backback.Substring(0, size / 2), backback.Substring(size / 2) };
 }
