@@ -18,7 +18,6 @@ class Solution : Solver
             var result = RunPhaseSequence(curr, input);
             return result > max ? result : max;
         });
-        return 0;
     }
 
     public object PartTwo(string input)

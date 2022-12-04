@@ -35,7 +35,6 @@ class Solution : Solver
     public object PartTwo(string input)
     {
         var instructions = from wire in input.Split('\n') select ParseWire(wire);
-        var lowestDistance = 9999999;
 
         instructions.Aggregate(new Dictionary<string, int>(), (lookup, wire) =>
         {
