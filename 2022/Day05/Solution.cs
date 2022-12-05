@@ -16,7 +16,7 @@ class Solution : Solver
         var crates = stacks;
         foreach (var i in instructions)
         {
-            crates = ExecuteInstruction(crates, i);
+            crates = ExecuteInstructionSingleMove(crates, i);
         }
 
         var answer = "";
@@ -29,14 +29,43 @@ class Solution : Solver
 
     public object PartTwo(string input)
     {
-        return 0;
+        var (stacks, instructions) = Read(input);
+        var crates = stacks;
+        foreach (var i in instructions)
+        {
+            crates = ExecuteInstructionMultiMove(crates, i);
+        }
+
+        var answer = "";
+        foreach (var stack in crates)
+        {
+            answer += stack.Pop();
+        }
+        return answer;
     }
 
-    Stack<char>[] ExecuteInstruction(Stack<char>[] crates, Instruction instruction)
+    Stack<char>[] ExecuteInstructionSingleMove(Stack<char>[] crates, Instruction instruction)
     {
         for (var i = 0; i < instruction.count; i++)
         {
             crates[instruction.to - 1].Push(crates[instruction.from - 1].Pop());
+        }
+
+        return crates;
+    }
+    
+    Stack<char>[] ExecuteInstructionMultiMove(Stack<char>[] crates, Instruction instruction)
+    {
+        var movedCrates = new List<char>();
+        for (var i = 0; i < instruction.count; i++)
+        {
+            movedCrates.Add(crates[instruction.from - 1].Pop());
+        }
+
+        movedCrates.Reverse();
+        for (var i = 0; i < instruction.count; i++)
+        {
+            crates[instruction.to - 1].Push(movedCrates[i]);
         }
 
         return crates;
