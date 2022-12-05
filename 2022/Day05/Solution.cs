@@ -56,16 +56,15 @@ class Solution : Solver
     
     Stack<char>[] ExecuteInstructionMultiMove(Stack<char>[] crates, Instruction instruction)
     {
-        var movedCrates = new List<char>();
+        var movedCrates = new Stack<char>();
         for (var i = 0; i < instruction.count; i++)
         {
-            movedCrates.Add(crates[instruction.from - 1].Pop());
+            movedCrates.Push(crates[instruction.from - 1].Pop());
         }
 
-        movedCrates.Reverse();
         for (var i = 0; i < instruction.count; i++)
         {
-            crates[instruction.to - 1].Push(movedCrates[i]);
+            crates[instruction.to - 1].Push(movedCrates.Pop());
         }
 
         return crates;
@@ -87,12 +86,11 @@ class Solution : Solver
 
     Stack<char>[] ReadCrates(string crates)
     {
-        var infoRx = new Regex(@"[\d\w]");
+        var infoRx = new Regex(@"[\d+]");
         var rows = crates.Split('\n').Reverse();
         var labelRow = rows.First();
         var crateRows = rows.Skip(1);
         return (from stack in infoRx.Matches(labelRow)
-                let stackLabel = int.Parse(stack.Value)
                 let index = labelRow.IndexOf(stack.Value)
                 select new Stack<char>(
                     from cr in crateRows where cr[index] != ' ' select cr[index]
