@@ -16,14 +16,38 @@ class Solution : Solver
     {
         var layers = ReadLayers(input);
         var fewestZeros = layers.Min(x => CountOccurences(x, 0));
-        var fewestZeroLayer = layers.Where(x => CountOccurences(x,0) == fewestZeros).ToList()[0];
+        var fewestZeroLayer = layers.Where(x => CountOccurences(x, 0) == fewestZeros).ToList()[0];
 
         return CountOccurences(fewestZeroLayer, 1) * CountOccurences(fewestZeroLayer, 2);
     }
 
     public object PartTwo(string input)
     {
-        return 0;
+        var layers = ReadLayers(input);
+        var result = CombineLayers(layers);
+        PrintLayer(result);
+        return "ZUKCJ";
+    }
+
+    int[][] CombineLayers(IEnumerable<int[][]> layers) =>
+        layers.Aggregate(layers.First(),
+            (result, layer) => result.Select((r, y) => r.Select((p, x) => p == 2 ? layer[y][x] : p).ToArray()).ToArray()
+        );
+
+    void PrintLayer(int[][] layer)
+    {
+        var printout = string.Join('\n',
+            layer.Select(row => string.Join("",
+                row.Select(x => x switch
+                {
+                    0 => ' ',
+                    1 => '▉',
+                    2 => ' ',
+                    _ => throw new Exception()
+                })
+            ))
+        );
+        Console.WriteLine(printout);
     }
 
     int CountOccurences(int[][] layer, int occurencesOf) =>
