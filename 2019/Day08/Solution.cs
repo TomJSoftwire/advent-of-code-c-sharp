@@ -31,7 +31,9 @@ class Solution : Solver
 
     int[][] CombineLayers(IEnumerable<int[][]> layers) =>
         layers.Aggregate(layers.First(),
-            (result, layer) => result.Select((r, y) => r.Select((p, x) => p == 2 ? layer[y][x] : p).ToArray()).ToArray()
+            (result, layer) => result.Select(
+                (row, y) => row.Select((pixel, x) => pixel == 2 ? layer[y][x] : pixel).ToArray()
+                ).ToArray()
         );
 
     void PrintLayer(int[][] layer)
