@@ -127,3 +127,85 @@ Here are some larger examples:
 Find the best location for a new monitoring station.  <em>How many other asteroids can be detected from that location?</em>
 
 
+## --- Part Two ---
+Once you give them the coordinates, the Elves quickly deploy an Instant Monitoring Station to the location and discover the worst: there are simply too many asteroids.
+
+The only solution is <em>complete vaporization by giant laser</em>.
+
+Fortunately, in addition to an asteroid scanner, the new monitoring station also comes equipped with a giant rotating laser perfect for vaporizing asteroids. The laser starts by pointing <em>up</em> and always rotates <em>clockwise</em>, vaporizing any asteroid it hits.
+
+If multiple asteroids are <em>exactly</em> in line with the station, the laser only has enough power to vaporize <em>one</em> of them before continuing its rotation. In other words, the same asteroids that can be <em>detected</em> can be vaporized, but if vaporizing one asteroid makes another one detectable, the newly-detected asteroid won't be vaporized until the laser has returned to the same position by rotating a full 360 degrees.
+
+For example, consider the following map, where the asteroid with the new monitoring station (and laser) is marked <code>X</code>:
+
+<pre>
+<code>.#....#####...#..
+##...##.#####..##
+##...#...#.#####.
+..#.....X...###..
+..#.#.....#....##
+</code>
+</pre>
+
+The first nine asteroids to get vaporized, in order, would be:
+
+<pre>
+<code>.#....###<em>2</em><em>4</em>...#..
+##...##.<em>1</em><em>3</em>#<em>6</em><em>7</em>..<em>9</em>#
+##...#...<em>5</em>.<em>8</em>####.
+..#.....X...###..
+..#.#.....#....##
+</code>
+</pre>
+
+Note that some asteroids (the ones behind the asteroids marked <code>1</code>, <code>5</code>, and <code>7</code>) won't have a chance to be vaporized until the next full rotation.  The laser continues rotating; the next nine to be vaporized are:
+
+<pre>
+<code>.#....###.....#..
+##...##...#.....#
+##...#......<em>1</em><em>2</em><em>3</em><em>4</em>.
+..#.....X...<em>5</em>##..
+..#.<em>9</em>.....<em>8</em>....<em>7</em><em>6</em>
+</code>
+</pre>
+
+The next nine to be vaporized are then:
+
+<pre>
+<code>.<em>8</em>....###.....#..
+<em>5</em><em>6</em>...<em>9</em>#...#.....#
+<em>3</em><em>4</em>...<em>7</em>...........
+..<em>2</em>.....X....##..
+..<em>1</em>..............
+</code>
+</pre>
+
+Finally, the laser completes its first full rotation (<code>1</code> through <code>3</code>), a second rotation (<code>4</code> through <code>8</code>), and vaporizes the last asteroid (<code>9</code>) partway through its third rotation:
+
+<pre>
+<code>......<em>2</em><em>3</em><em>4</em>.....<em>6</em>..
+......<em>1</em>...<em>5</em>.....<em>7</em>
+.................
+........X....<em>8</em><em>9</em>..
+.................
+</code>
+</pre>
+
+In the large example above (the one with the best monitoring station location at <code>11,13</code>):
+
+
+ - The 1st asteroid to be vaporized is at <code>11,12</code>.
+ - The 2nd asteroid to be vaporized is at <code>12,1</code>.
+ - The 3rd asteroid to be vaporized is at <code>12,2</code>.
+ - The 10th asteroid to be vaporized is at <code>12,8</code>.
+ - The 20th asteroid to be vaporized is at <code>16,0</code>.
+ - The 50th asteroid to be vaporized is at <code>16,9</code>.
+ - The 100th asteroid to be vaporized is at <code>10,16</code>.
+ - The 199th asteroid to be vaporized is at <code>9,6</code>.
+ - <em>The 200th asteroid to be vaporized is at <code>8,2</code>.</em>
+ - The 201st asteroid to be vaporized is at <code>10,9</code>.
+ - The 299th and final asteroid to be vaporized is at <code>11,1</code>.
+
+The Elves are placing bets on which will be the <em>200th</em> asteroid to be vaporized.  Win the bet by determining which asteroid that will be; <em>what do you get if you multiply its X coordinate by <code>100</code> and then add its Y coordinate?</em> (For example, <code>8,2</code> becomes <em><code>802</code></em>.)
+
+
