@@ -16,18 +16,38 @@ class Solution : Solver
     {
         var field = ReadField(input);
         var coords = GetAsteroidCoords(field);
-        var t = coords.Max(x =>  CountVisibleAsteroids(x, coords));
-        return t;
+        var coordsWithVisibleCount = coords.Select(x => (x, GetVisibleAsteroids(x, coords).Count()));
+        return coordsWithVisibleCount.Max(x => x.Item2);
     }
 
     public object PartTwo(string input)
     {
-        return 0;
+        var field = ReadField(input);
+        var coords = GetAsteroidCoords(field);
+        var coordsWithVisibleCount = coords.Select(x => (x, GetVisibleAsteroids(x, coords).Count()));
+        var t = coordsWithVisibleCount.Max(x => x.Item2);
+        var stationLoc = coordsWithVisibleCount.Where(x => x.Item2 == t).First().Item1;
+        var visibleAsteroids = GetVisibleAsteroids(stationLoc, coords).ToList();
+        visibleAsteroids.Sort((a, b) =>
+            CalculateClockwiseAngle(stationLoc, a) < CalculateClockwiseAngle(stationLoc, b) ? -1 : 1
+        );
+        var dir = visibleAsteroids.Select(x => CalculateClockwiseAngle(stationLoc, x));
+        var betAsteroid = visibleAsteroids[199];
+        return betAsteroid.x * 100 + betAsteroid.y;
     }
 
-    int CountVisibleAsteroids(Coord fromAsteroid, IEnumerable<Coord> allAsteroids)
+    double CalculateClockwiseAngle(Coord stationCoord, Coord asteroidCoord)
+    {
+        var yDiff = asteroidCoord.y - stationCoord.y;
+        var xDiff = asteroidCoord.x - stationCoord.x;
+        var angle = Math.Atan2(yDiff, xDiff) * 180 / Math.PI + 90;
+        return angle >= 0 ? angle : angle + 360;
+    }
+
+
+    IEnumerable<Coord> GetVisibleAsteroids(Coord fromAsteroid, IEnumerable<Coord> allAsteroids)
         => allAsteroids.Where(x => x != fromAsteroid)
-            .Where(x => CanAsteroidsSeeEachother(fromAsteroid, x, allAsteroids)).Count();
+            .Where(x => CanAsteroidsSeeEachother(fromAsteroid, x, allAsteroids));
 
     bool CanAsteroidsSeeEachother(Coord a, Coord b, IEnumerable<Coord> allAsteroids)
     {
@@ -36,31 +56,30 @@ class Solution : Solver
         var dy = a.y - b.y;
         if (dx == 0)
         {
-            var res = otherAsteroids.Where(o => o.x == a.x && ((o.y > a.y && o.y < b.y) || (o.y < a.y && o.y > b.y)))
-                .ToList();
-            return !res.Any();
+            return !otherAsteroids.Where(
+                    o => o.x == a.x && ((o.y > a.y && o.y < b.y) || (o.y < a.y && o.y > b.y)))
+                .Any();
         }
 
         if (dy == 0)
         {
-            var res = otherAsteroids.Where(o => o.y == a.y && ((o.x > a.x && o.x < b.x) || (o.x < a.x && o.x > b.x)))
-                .ToList();
-            return !res.Any();
+            return !otherAsteroids.Where(
+                    o => o.y == a.y && ((o.x > a.x && o.x < b.x) || (o.x < a.x && o.x > b.x)))
+                .Any();
         }
 
         otherAsteroids = otherAsteroids.Where(o => o.x != a.x && o.y != a.y);
+
         var direction = GetDirection(a, b);
         var distance = Math.Pow((a.x - b.x), 2) + Math.Pow(a.y - b.y, 2);
         var isLeftOfA = b.x < a.x;
-        var otherProps =
-            otherAsteroids.Select(o =>
-                (GetDirection(a, o), Math.Pow((a.x - o.x), 2) + Math.Pow(a.y - o.y, 2), o.x < a.x));
-        var blockingAsteroids = otherProps.Where(o =>
-            o.Item1 == direction &&
-            o.Item2 < distance &&
-            o.Item3 == isLeftOfA);
-        var result = !blockingAsteroids.Any();
-        return result;
+
+        var blockingAsteroids = otherAsteroids.Where(o =>
+            GetDirection(a, o) == direction &&
+            Math.Pow((a.x - o.x), 2) + Math.Pow(a.y - o.y, 2) < distance &&
+            o.x < a.x == isLeftOfA
+        );
+        return !blockingAsteroids.Any();
     }
 
     double GetDirection(Coord a, Coord b)
