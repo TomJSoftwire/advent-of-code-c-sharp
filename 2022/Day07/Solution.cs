@@ -23,36 +23,42 @@ class Solution : Solver
         var storage = MapStorage(input);
         var spaceRemaining = 70000000 - storage.GetSize();
         var deletionRequired = 30000000 - spaceRemaining;
-        var deletionCandidates = new List<Directory>();
-        GetDirectoriesLargerThan(deletionRequired, storage, deletionCandidates);
+        var deletionCandidates = GetDirectoriesLargerThan(deletionRequired, storage);
         return deletionCandidates.Min(x => x.GetSize());
     }
 
-    public void GetDirectoriesSmallerThan(int size, Directory directory, List<Directory> resultSizes)
+    public List<Directory> GetDirectoriesSmallerThan(int size, Directory directory, List<Directory> resultSizes = null)
     {
+        var result = resultSizes == null ? new List<Directory>() : resultSizes;
         var dirSize = directory.GetSize();
         if (dirSize <= size)
         {
-            resultSizes.Add(directory);
+            result.Add(directory);
         }
 
         foreach (var child in directory.children)
         {
-            GetDirectoriesSmallerThan(size, child, resultSizes);
+            GetDirectoriesSmallerThan(size, child, result);
         }
+
+        return result;
     }
-    public void GetDirectoriesLargerThan(int size, Directory directory, List<Directory> resultSizes)
+
+    public List<Directory> GetDirectoriesLargerThan(int size, Directory directory, List<Directory> resultSizes = null)
     {
+        var result = resultSizes == null ? new List<Directory>() : resultSizes;
         var dirSize = directory.GetSize();
         if (dirSize >= size)
         {
-            resultSizes.Add(directory);
+            result.Add(directory);
         }
 
         foreach (var child in directory.children)
         {
-            GetDirectoriesLargerThan(size, child, resultSizes);
+            GetDirectoriesLargerThan(size, child, result);
         }
+
+        return result;
     }
 
     Directory MapStorage(string input)
@@ -66,7 +72,7 @@ class Solution : Solver
             switch (instructionAndOutput[0].Substring(0, 2))
             {
                 case "cd":
-                    currentDir = ChangeDirectory(currentDir, i);
+                    currentDir = ChangeDirectory(currentDir, i.Substring(3));
                     break;
                 case "ls":
                     currentDir.AddContents(instructionAndOutput.Skip(1));
@@ -79,9 +85,8 @@ class Solution : Solver
     }
 
 
-    Directory ChangeDirectory(Directory curr, string instruction)
+    Directory ChangeDirectory(Directory curr, string path)
     {
-        var path = instruction.Substring(3);
         return path switch
         {
             "/" => curr.GetRoot(),
@@ -93,22 +98,20 @@ class Solution : Solver
 
 class Directory
 {
-    public Directory parent { set; get; }
-    public HashSet<Directory> children = new HashSet<Directory>();
-    public HashSet<File> files = new HashSet<File>();
-    public bool isRoot;
+    public Directory parent { get; }
+    public HashSet<Directory> children { get; } = new HashSet<Directory>();
+    public HashSet<File> files { get; } = new HashSet<File>();
     public string name { get; init; }
+    private int size = 0;
 
     public Directory(Directory parent, string name)
     {
         this.parent = parent;
-        this.isRoot = false;
         this.name = name;
     }
 
     public Directory()
     {
-        this.isRoot = true;
         this.name = "/";
     }
 
@@ -144,7 +147,14 @@ class Directory
     }
 
     public int GetSize()
-        => this.children.Sum(child => child.GetSize()) + this.files.Sum(file => file.size);
+    {
+        if (this.size == 0)
+        {
+            this.size = this.children.Sum(child => child.GetSize()) + this.files.Sum(file => file.size);
+        }
+
+        return this.size;
+    }
 }
 
 record File(int size, string name);
