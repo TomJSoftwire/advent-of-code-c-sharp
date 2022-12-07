@@ -13,22 +13,27 @@ class Solution : Solver
     public object PartOne(string input)
     {
         var storage = MapStorage(input);
-        var smallDirs = new List<int>();
+        var smallDirs = new List<Directory>();
         GetDirectoriesSmallerThan(100000, storage, smallDirs);
-        return smallDirs.Sum();
+        return smallDirs.Sum(x => x.GetSize());
     }
 
     public object PartTwo(string input)
     {
-        return 0;
+        var storage = MapStorage(input);
+        var spaceRemaining = 70000000 - storage.GetSize();
+        var deletionRequired = 30000000 - spaceRemaining;
+        var deletionCandidates = new List<Directory>();
+        GetDirectoriesLargerThan(deletionRequired, storage, deletionCandidates);
+        return deletionCandidates.Min(x => x.GetSize());
     }
 
-    public void GetDirectoriesSmallerThan(int size, Directory directory, List<int> resultSizes)
+    public void GetDirectoriesSmallerThan(int size, Directory directory, List<Directory> resultSizes)
     {
         var dirSize = directory.GetSize();
         if (dirSize <= size)
         {
-            resultSizes.Add(dirSize);
+            resultSizes.Add(directory);
         }
 
         foreach (var child in directory.children)
@@ -36,10 +41,23 @@ class Solution : Solver
             GetDirectoriesSmallerThan(size, child, resultSizes);
         }
     }
+    public void GetDirectoriesLargerThan(int size, Directory directory, List<Directory> resultSizes)
+    {
+        var dirSize = directory.GetSize();
+        if (dirSize >= size)
+        {
+            resultSizes.Add(directory);
+        }
+
+        foreach (var child in directory.children)
+        {
+            GetDirectoriesLargerThan(size, child, resultSizes);
+        }
+    }
 
     Directory MapStorage(string input)
     {
-        var instructions = input.Split("\n$ ");
+        var instructions = input.Substring(2).Split("\n$ ");
         var root = new Directory();
         var currentDir = root;
         foreach (var i in instructions)
